@@ -21,7 +21,9 @@ module.exports = function patch (oldVnode, newVnode, render) {
   }
 
   // text nodes are easy to diff, just commpare their text
-  if (oldVnode.textNode) {
+  if (oldVnode.textNode && oldVnode.dom.textContent !== newVnode.text) {
+    oldVnode.text = newVnode.text
+    oldVnode.dom.textContent = newVnode.text
     return
   }
 
