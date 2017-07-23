@@ -1,23 +1,24 @@
-var appNode
-var app
-
-function getChildren (vnodeArgs) {
-  var children = []
-  for (var i = 1; i < vnodeArgs.length; i++) children.push(vnodeArgs[i])
-  return children
-}
+var patch = require('./patch')
 
 module.exports = {
   t: function t (tag, attrs, children) {
-    // normalize arguments
-    if (arguments.length === 2 && (attrs.constructor === Array || attrs.constructor === String)) {
+    if (
+      arguments.length === 2 &&
+      (attrs.constructor === Array || attrs.constructor === String)
+    ) {
       return t(tag, {}, attrs)
     }
+
     if (arguments[1] && arguments[1].$vnode) {
-      return t(tag, {}, getChildren(arguments))
+      var childNodes = []
+      for (var i = 1; i < arguments.length; i++) {
+        var child = arguments[i]
+        child.key = i
+        childNodes.push(child)
+      }
+      return t(tag, {}, childNodes)
     }
 
-    // return structured vnode
     return {
       $vnode: true,
       tag: tag,
@@ -25,11 +26,15 @@ module.exports = {
       children: children || []
     }
   },
-  mount: function mount (app, element) {
-    appNode = element
-    app = app()
 
-    window.console.log(app)
+  mount: function mount (app, element) {
+    var vdom = app()
+
+    var render = require('./render')(function onUpdate () {
+      var updatedVdom = app()
+      patch(vdom, updatedVdom, render)
+    })
+
+    render(element, vdom)
   }
 }
-
