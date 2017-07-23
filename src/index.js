@@ -12,9 +12,7 @@ module.exports = {
     if (arguments[1] && arguments[1].$vnode) {
       var childNodes = []
       for (var i = 1; i < arguments.length; i++) {
-        var child = arguments[i]
-        child.key = i
-        childNodes.push(child)
+        childNodes.push(arguments[i])
       }
       return t(tag, {}, childNodes)
     }

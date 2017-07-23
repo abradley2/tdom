@@ -11,10 +11,13 @@ module.exports = function (onUpdate) {
     for (var attr in vnode.attrs) {
       // if attribute is a handler, apply it to the node
       if (events[attr]) {
-        el[events[attr]] = function () {
-          vnode.attrs[attr].apply(vnode, arguments)
+        var handler = vnode.attrs[attr]
+        var wrappedHandler = function () {
+          handler.apply(vnode, arguments)
           onUpdate()
         }
+        el[events[attr]] = wrappedHandler
+        vnode.attrs[attr] = wrappedHandler
         continue
       }
 
