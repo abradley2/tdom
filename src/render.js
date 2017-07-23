@@ -2,7 +2,12 @@ var events = require('./events')
 
 module.exports = function (onUpdate) {
   return function render (element, vnode, parentVnode) {
-    var el = document.createElement(vnode.tag)
+    var el
+    if (vnode.textNode) {
+      el = document.createTextNode(vnode.text)
+    } else {
+      el = document.createElement(vnode.tag)
+    }
 
     vnode.dom = el
     vnode.parentVnode = parentVnode

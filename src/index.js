@@ -1,27 +1,47 @@
 var patch = require('./patch')
 
+function createTextNode (text) {
+  return {
+    $vnode: true,
+    tag: null,
+    textNode: true,
+    text: text,
+    attrs: {},
+    children: []
+  }
+}
+
 module.exports = {
   t: function t (tag, attrs, children) {
-    if (
-      arguments.length === 2 &&
-      (attrs.constructor === Array || attrs.constructor === String)
-    ) {
-      return t(tag, {}, attrs)
+    var i
+
+    // allow for 1 or 2 arguments for easy shorthands
+    if (arguments.length === 1) return t(tag, {}, [])
+
+    if (attrs.constructor === Array) return t(tag, {}, attrs)
+
+    if (attrs.constructor === String || attrs.$vnode) {
+      var childArgs = []
+      for (i = 1; i < arguments.length; i++) childArgs.push(arguments[i])
+      return t(tag, {}, childArgs)
     }
 
-    if (arguments[1] && arguments[1].$vnode) {
-      var childNodes = []
-      for (var i = 1; i < arguments.length; i++) {
-        childNodes.push(arguments[i])
+    if (!children) children = []
+
+    if (children.constructor === String) children = [children]
+
+    // automatically turn any child nodes that are strings into text nodes
+    for (i = 0; i < children.length; i++) {
+      if (children[i] && children[i].constructor === String) {
+        children[i] = createTextNode(children[i])
       }
-      return t(tag, {}, childNodes)
     }
 
     return {
       $vnode: true,
       tag: tag,
-      attrs: attrs || {},
-      children: children || []
+      attrs: attrs,
+      children: children
     }
   },
 

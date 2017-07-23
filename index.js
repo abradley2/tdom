@@ -6,7 +6,8 @@ const state = {
   newTodo: 'new todo',
   todos: [
     {id: uid, title: 'do stuff', completed: false}
-  ]
+  ],
+  count: 0
 }
 
 function app () {
@@ -18,7 +19,7 @@ function app () {
         state.newTodo = e.target.value
       }
     }),
-    t('h3', 'Some Text'),
+    t('h3', state.newTodo),
     t('button', {
       onclick: function (e) {
         state.todos.push({id: uid += 1, title: state.newTodo, completed: false})
@@ -27,7 +28,15 @@ function app () {
     }, 'click me!'),
     t('ul', state.todos.map(function (todo) {
       return t('li', {key: todo.id}, todo.title)
-    }))
+    })),
+    t('div',
+      t('button', {
+        onclick: function () {
+          state.count += 1
+        }
+      }, '+'),
+      state.count.toString()
+    )
   )
 }
 

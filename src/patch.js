@@ -3,11 +3,7 @@ var getAttr = require('./attrs').getAttr
 var setAttr = require('./attrs').setAttr
 
 module.exports = function patch (oldVnode, newVnode, render) {
-  // TODO: once again, not a good way to do this
-  if (newVnode.constructor === String || oldVnode.constructor === String) {
-    return
-  }
-
+  if (!oldVnode.dom) window.console.log('no dom! ', oldVnode)
   var parent = oldVnode.dom.parentElement
 
   // if the tag is entirely different,
@@ -21,6 +17,11 @@ module.exports = function patch (oldVnode, newVnode, render) {
     parent.replaceChild(oldChildNode, newChildNode)
 
     // we're done here
+    return
+  }
+
+  // text nodes are easy to diff, just commpare their text
+  if (oldVnode.textNode) {
     return
   }
 
