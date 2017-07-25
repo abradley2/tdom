@@ -1,3 +1,3 @@
 # t-dom
 
-A virtual dom implementation I wrote because reasons.
+Virtual DOM implementation with built in focus around web sockets

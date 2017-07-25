@@ -23,7 +23,7 @@ function app () {
     t('button', {
       onclick: function (e) {
         state.todos.push({id: uid += 1, title: state.newTodo, completed: false})
-        state.newTodo = ''
+        state.newTodo = 'stuff'
       }
     }, 'click me!'),
     t('ul', state.todos.map(function (todo) {
