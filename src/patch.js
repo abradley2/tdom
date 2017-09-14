@@ -41,8 +41,16 @@ module.exports = function patch (oldVnode, newVnode, render) {
     }
   }
 
+  window.console.log('old = ', oldVnode.children.length, ' new = ', newVnode.children.length)
   // TODO: not a good way to do this
-  for (var i = 0; i < oldVnode.children.length; i++) {
+  var i = 0
+  while (i < newVnode.children.length) {
+    const child = oldVnode.children[i]
+    if (child && child.attrs) {
+      window.console.log(child.attrs)
+    }
     patch(oldVnode.children[i], newVnode.children[i], render)
+    i = i + 1
   }
+  // TODO: deal with deletion later this shit is really fucking hard
 }
