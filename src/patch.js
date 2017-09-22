@@ -54,11 +54,9 @@ module.exports = function patch (oldVnode, newVnode, render) {
 
     // if the oldVnodes children don't extend this far, time to append!
     if (!child) {
-      window.console.log(newVnode.children[i])
-      var newEl = render(null, newVnode.children[i], parentVnode)
-      window.console.log(newEl)
+      var newEl = render(null, newVnode.children[i], oldVnode.dom)
       oldVnode.children[i] = newVnode.children[i]
-      parent.appendChild(newEl)
+      oldVnode.dom.appendChild(newEl)
     } else {
     // otherwise we need to figure out how to patch this
     }
