@@ -29,6 +29,7 @@ module.exports = function patch (oldVnode, newVnode, render) {
 
   // check if any attribtues have changed
   for (var attr in newVnode.attrs) {
+    // for event handlers we need to re-wrap them as we copy them over
     if (events[attr] && oldVnode.attrs[attr] !== newVnode.attrs[attr]) {
       var handler = newVnode.attrs[attr]
       var wrappedHandler = function () {
@@ -40,6 +41,7 @@ module.exports = function patch (oldVnode, newVnode, render) {
       continue
     }
 
+    // anything else we can just set normally
     if (newVnode.attrs[attr] !== getAttr(oldVnode.dom, attr)) {
       var value = newVnode.attrs[attr]
 
@@ -57,7 +59,11 @@ module.exports = function patch (oldVnode, newVnode, render) {
       var newEl = render(null, newVnode.children[i], oldVnode.dom)
       oldVnode.children[i] = newVnode.children[i]
       oldVnode.dom.appendChild(newEl)
-    } else {
+    } else if (
+      typeof child.attrs.key !== 'undefined' &&
+      child.attrs.key === newVnode.children[i].attrs.key
+    ) {
+      window.console.log('simple patch === nchild === ', child)
     // otherwise we need to figure out how to patch this
     }
 
