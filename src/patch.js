@@ -29,7 +29,14 @@ module.exports = function patch (oldVnode, newVnode, render) {
   // check if any attribtues have changed
   for (var attr in newVnode.attrs) {
     // TODO: figure out how to handle this
-    if (events[attr]) {
+    if (events[attr] && oldVnode.attrs[attr] !== newVnode.attrs[attr]) {
+      var handler = newVnode.attrs[attr]
+      var wrappedHandler = function () {
+        handler.apply(oldVnode, arguments)
+        oldVnode.onUpdate()
+      }
+      oldVnode.attrs[attr] = wrappedHandler
+      oldVnode.dom[attr] = wrappedHandler
       continue
     }
 

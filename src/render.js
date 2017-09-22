@@ -12,6 +12,7 @@ module.exports = function (onUpdate) {
     vnode.dom = el
     vnode.parentVnode = parentVnode
     vnode.root = !!parentVnode
+    vnode.onUpdate = onUpdate
 
     for (var attr in vnode.attrs) {
       // if attribute is a handler, apply it to the node
@@ -19,7 +20,7 @@ module.exports = function (onUpdate) {
         var handler = vnode.attrs[attr]
         var wrappedHandler = function () {
           handler.apply(vnode, arguments)
-          onUpdate()
+          vnode.onUpdate()
         }
         el[events[attr]] = wrappedHandler
         vnode.attrs[attr] = wrappedHandler
