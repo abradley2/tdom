@@ -52,7 +52,7 @@ module.exports = function patch (oldVnode, newVnode, render) {
 
   var i = 0
   while (i < newVnode.children.length) {
-    const child = oldVnode.children[i]
+    var child = oldVnode.children[i]
 
     // if the oldVnodes children don't extend this far, time to append!
     if (!child) {

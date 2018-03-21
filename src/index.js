@@ -54,5 +54,9 @@ module.exports = {
     })
 
     render(element, vdom)
+    
+    return function () {
+      render(element, vndom)
+    }
   }
 }

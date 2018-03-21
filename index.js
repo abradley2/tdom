@@ -26,8 +26,17 @@ function app () {
         state.newTodo = 'stuff'
       }
     }, 'click me!'),
-    t('ul', state.todos.map(function (todo) {
-      return t('li', {key: todo.id}, todo.title)
+    t('ul', state.todos.map(function (todo, idx) {
+      return t('li', {key: todo.id}, [
+        t('span',  todo.title),
+        t('input', {
+          type: 'text',
+          value: todo.title,
+          oninput: function (e) {
+            state.todos[idx].title = e.target.value
+          }
+        })
+      ])
     })),
     t('div',
       t('button', {
