@@ -78,6 +78,8 @@ module.exports = function patch (oldVnode, newVnode, render) {
     i = i + 1
   }
   
+  // if the index still isn't as large as the oldVnode then this means
+  // we need to delete stuff
   while (i < oldVnode.children.length) {
     oldVnode.children[i].dom.remove()
     oldVnode.children.splice(i, 1)

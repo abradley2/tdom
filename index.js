@@ -1,3 +1,4 @@
+/** @jsx t */
 const {t, mount} = require('./src')
 
 let uid = 0
@@ -11,56 +12,67 @@ const state = {
 }
 
 function app () {
-  return t('div',
-    t('input', {
-      type: 'text',
-      value: state.newTodo,
-      oninput: function (e) {
+  return <div>
+    <input
+      type="text"
+      value={state.newTodo}
+      oninput={(e) => {
         state.newTodo = e.target.value
-      }
-    }),
-    t('h3', state.newTodo),
-    t('button', {
-      onclick: function (e) {
+      }}
+    />
+    <h3>{state.newTodo}</h3>
+    <button
+      onclick={(e) => {
         state.todos.push({id: uid += 1, title: state.newTodo, completed: false})
-        state.newTodo = 'stuff'
-      }
-    }, 'click me!'),
-    t('ul', state.todos.map(function (todo, idx) {
-      return t('li', {key: todo.id}, [
-        t('span', {
-          style: todo.completed ? 'color: blue;' : ''
-        }, todo.title),
-        t('input', {
-          type: 'text',
-          value: todo.title,
-          oninput: function (e) {
-            state.todos[idx].title = e.target.value
-          }
-        }),
-        t('button', {
-          onclick: function (e) {
-            state.todos[idx].completed = !state.todos[idx].completed
-          }
-        }, 'complete'),
-        t('button', {
-          onclick: function (e) {
-            state.todos = state.todos.filter(function (v) {
-              return v.id !== todo.id
-            })
-          }
-        }, 'delete')
-      ])
-    })),
-    t('div',
-      t('button', {
-        onclick: function () {
+        state.newTodo = ''
+      }}
+    >
+        Add New Todo
+    </button>
+    <ul>
+      {state.todos.map(todo => {
+        return <li key={todo.id}>
+          <span
+            style={todo.completed ? 'color: blue;' : ''}
+          >
+            {todo.title}
+          </span>
+          <input
+            type="text"
+            value={todo.title}
+            oninput={(e) => {
+              state.todos[idx].title = e.target.value
+            }}
+          />
+          <button
+            onclick={() => {
+              state.todos[idx].completed = !state.todos[idx].completed
+            }}
+          >
+            toggle complete
+          </button>
+          <button
+            onclick={() => {
+              state.todos = state.todos.filter((v) => {
+                return v.id !== todo.id
+              })
+            }}
+          >
+            delete
+          </button>
+        </li>
+      })}
+    </ul>
+    <div>
+      <button
+        onclick={() => {
           state.count += 1
-        }
-      }, '+'),
-      state.count.toString()
-    )
-  )
+        }}
+      >
+        +count
+      </button>
+    </div>
+  </div>
 }
 
 document.addEventListener('DOMContentLoaded', function () {

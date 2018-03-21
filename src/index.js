@@ -12,8 +12,9 @@ function createTextNode (text) {
 }
 
 module.exports = {
-  t: function t (tag, attrs, children) {
+  t: function t (tag, _attrs, children) {
     var i
+    var attrs = _attrs || {}
 
     // allow for 1 or 2 arguments for easy shorthands
     if (arguments.length === 1) return t(tag, {}, [])

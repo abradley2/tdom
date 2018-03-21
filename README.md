@@ -1,7 +1,7 @@
 # t-dom
 
-Virtual DOM implementation with built in focus around web sockets
-
+An experiment in building a virtual DOM library that doesn't violate
+the [single responsibility principle](https://en.wikipedia.org/wiki/Single_responsibility_principle)
 
 ### Usage
 
@@ -39,7 +39,6 @@ function counter() {
   </div>
 }
 ```
-
 The key difference is there's no need to call `setState` to trigger a re-render.
 tdom is smart and will diff the dom anytime an event handler is called. If your
 state change after an event handler is asynchronous, no problem, return a promise
