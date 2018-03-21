@@ -36,7 +36,12 @@ module.exports = {
         children[i] = createTextNode(children[i])
       }
     }
-
+    global.console.log({
+      $vnode: true,
+      tag: tag,
+      attrs: attrs,
+      children: children
+    })
     return {
       $vnode: true,
       tag: tag,
