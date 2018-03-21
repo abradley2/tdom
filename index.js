@@ -28,14 +28,28 @@ function app () {
     }, 'click me!'),
     t('ul', state.todos.map(function (todo, idx) {
       return t('li', {key: todo.id}, [
-        t('span',  todo.title),
+        t('span', {
+          style: todo.completed ? 'color: blue;' : ''
+        }, todo.title),
         t('input', {
           type: 'text',
           value: todo.title,
           oninput: function (e) {
             state.todos[idx].title = e.target.value
           }
-        })
+        }),
+        t('button', {
+          onclick: function (e) {
+            state.todos[idx].completed = !state.todos[idx].completed
+          }
+        }, 'complete'),
+        t('button', {
+          onclick: function (e) {
+            state.todos = state.todos.filter(function (v) {
+              return v.id !== todo.id
+            })
+          }
+        }, 'delete')
       ])
     })),
     t('div',

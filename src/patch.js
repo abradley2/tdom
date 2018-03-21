@@ -51,7 +51,14 @@ module.exports = function patch (oldVnode, newVnode, render) {
   }
 
   var i = 0
-  while (i < newVnode.children.length) {
+  var children = newVnode.children.map(function (child, idx) {
+    return Object.assign({
+      key: child.attrs.keyy || idx
+    }, child)
+  })
+  
+
+  while (i < children.length) {
     var child = oldVnode.children[i]
 
     // if the oldVnodes children don't extend this far, time to append!
@@ -70,5 +77,10 @@ module.exports = function patch (oldVnode, newVnode, render) {
     patch(oldVnode.children[i], newVnode.children[i], render)
     i = i + 1
   }
-  // TODO: deal with deletion later this shit is really fucking hard
+  
+  while (i < oldVnode.children.length) {
+    oldVnode.children[i].dom.remove()
+    oldVnode.children.splice(i, 1)
+    i = i + 1
+  }
 }
