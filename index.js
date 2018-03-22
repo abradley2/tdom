@@ -30,7 +30,7 @@ function app () {
         Add New Todo
     </button>
     <ul>
-      {state.todos.map(todo => {
+      {state.todos.map((todo, idx) => {
         return <li key={todo.id}>
           <span
             style={todo.completed ? 'color: blue;' : ''}
@@ -71,6 +71,7 @@ function app () {
       >
         +count
       </button>
+      {state.count.toString()}
     </div>
   </div>
 }

@@ -53,7 +53,7 @@ module.exports = function patch (oldVnode, newVnode, render) {
   var i = 0
   var children = newVnode.children.map(function (child, idx) {
     return Object.assign({
-      key: child.attrs.keyy || idx
+      key: child.attrs.key || idx
     }, child)
   })
   
@@ -66,12 +66,6 @@ module.exports = function patch (oldVnode, newVnode, render) {
       var newEl = render(null, newVnode.children[i], oldVnode.dom)
       oldVnode.children[i] = newVnode.children[i]
       oldVnode.dom.appendChild(newEl)
-    } else if (
-      typeof child.attrs.key !== 'undefined' &&
-      child.attrs.key === newVnode.children[i].attrs.key
-    ) {
-      window.console.log('simple patch === nchild === ', child)
-    // otherwise we need to figure out how to patch this
     }
 
     patch(oldVnode.children[i], newVnode.children[i], render)

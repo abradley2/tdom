@@ -12,7 +12,7 @@ function createTextNode (text) {
 }
 
 module.exports = {
-  t: function t (tag, _attrs, children) {
+  t: function t (tag, _attrs, ...children) {
     var i
     var attrs = _attrs || {}
 
@@ -28,12 +28,17 @@ module.exports = {
     }
 
     if (!children) children = []
-
-    if (children.constructor === String) children = [children]
-
+    
+    if (Array.isArray(children[0])) children = children[0]
+    
     // automatically turn any child nodes that are strings into text nodes
     for (i = 0; i < children.length; i++) {
-      if (children[i] && children[i].constructor === String) {
+      if (typeof children[i] !== 'undefined' &&
+        (
+          children[i].constructor === String ||
+          children[i].constructor === Number
+        )
+      ) {
         children[i] = createTextNode(children[i])
       }
     }
