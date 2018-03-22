@@ -56,7 +56,6 @@ module.exports = function patch (oldVnode, newVnode, render) {
       key: child.attrs.key || idx
     }, child)
   })
-  
 
   while (i < children.length) {
     var child = oldVnode.children[i]
@@ -71,7 +70,7 @@ module.exports = function patch (oldVnode, newVnode, render) {
     patch(oldVnode.children[i], newVnode.children[i], render)
     i = i + 1
   }
-  
+
   // if the index still isn't as large as the oldVnode then this means
   // we need to delete stuff
   while (i < oldVnode.children.length) {

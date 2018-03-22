@@ -28,9 +28,9 @@ module.exports = {
     }
 
     if (!children) children = []
-    
+
     if (Array.isArray(children[0])) children = children[0]
-    
+
     // automatically turn any child nodes that are strings into text nodes
     for (i = 0; i < children.length; i++) {
       if (typeof children[i] !== 'undefined' &&
@@ -55,14 +55,18 @@ module.exports = {
     var vdom = app()
 
     var render = require('./render')(function onUpdate () {
-      var updatedVdom = app()
-      patch(vdom, updatedVdom, render)
+      try {
+        var updatedVdom = app()
+        patch(vdom, updatedVdom, render)
+      } catch (err) {
+        window.console.error(err)
+      }
     })
 
     render(element, vdom)
-    
+
     return function () {
-      render(element, vndom)
+      render(element, vdom)
     }
   }
 }
