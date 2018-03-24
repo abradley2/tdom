@@ -1,5 +1,7 @@
 var events = require('./events')
 
+// The job of render is to take a vnode and actually "render"
+// this vnode to the dom with createElement, setAttribute, appendChild, etc
 module.exports = function (onUpdate) {
   return function render (element, vnode, parentVnode) {
     var el

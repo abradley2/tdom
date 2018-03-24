@@ -1,7 +1,6 @@
-# t-dom
+# smol
 
-An experiment in building a virtual DOM library that doesn't violate
-the [single responsibility principle](https://en.wikipedia.org/wiki/Single_responsibility_principle)
+An experiment in building a virtual dom library that is very smol
 
 ### Usage
 
