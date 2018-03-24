@@ -24,7 +24,7 @@ function app () {
     <button
       onclick={(e) => {
         state.todos.push({id: uid += 1, title: state.newTodo, completed: false})
-        state.newTodo = ''
+        state.newTodo = 'newtodo'
       }}
     >
         Add New Todo

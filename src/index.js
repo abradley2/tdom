@@ -55,12 +55,8 @@ module.exports = {
     var vdom = app()
 
     var render = require('./render')(function onUpdate () {
-      try {
-        var updatedVdom = app()
-        patch(vdom, updatedVdom, render)
-      } catch (err) {
-        window.console.error(err)
-      }
+      var updatedVdom = app()
+      patch(vdom, updatedVdom, render)
     })
 
     render(element, vdom)
