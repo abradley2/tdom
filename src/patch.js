@@ -16,8 +16,8 @@ module.exports = function patch (oldVnode, newVnode, render) {
     if (oldVnode.root) throw new Error('Cannot change tag of root app element')
 
     var oldChildNode = oldVnode.dom
-    var newChildNode = render(null, Object.assign(oldVnode, newVnode), parentVnode).dom
-    parent.replaceChild(oldChildNode, newChildNode)
+    var newChildNode = render(null, Object.assign(oldVnode, newVnode), parentVnode)
+    parent.replaceChild(newChildNode, oldChildNode)
 
     // we're done here
     return

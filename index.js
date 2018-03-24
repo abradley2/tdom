@@ -74,6 +74,12 @@ function app () {
       </button>
       {state.count.toString()}
     </div>
+    <div>
+      {state.count % 2 === 0
+        ? <span>span tag</span>
+        : <h1> h1 tag</h1>
+      }
+    </div>
   </div>
 }
 
