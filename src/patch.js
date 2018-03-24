@@ -9,11 +9,11 @@ module.exports = function patch (oldVnode, newVnode, render) {
   // if the tag is entirely different,
   // copy over everything fresh and re-render
   if (oldVnode.tag !== newVnode.tag) {
+    window.console.log(oldVnode, newVnode)
     if (oldVnode.root) throw new Error('Cannot change tag of root app element')
 
     var oldChildNode = oldVnode.dom
     var newChildNode = render(null, Object.assign(oldVnode, newVnode), parentVnode).dom
-
     parent.replaceChild(oldChildNode, newChildNode)
 
     // we're done here
@@ -55,6 +55,18 @@ module.exports = function patch (oldVnode, newVnode, render) {
 
   while (i < children.length) {
     var child = oldVnode.children[i]
+
+    // if the newvnode in this place is falsey, remove it from the dom
+    // and leave a false placeholder
+    if (
+      newVnode.children[i] === false &&
+      oldVnode.children[i] !== false
+    ) {
+      oldVnode.children[i].dom.remove()
+      oldVnode.children[i] = false
+      i = i + 1
+      continue
+    }
 
     // if the oldVnodes children don't extend this far, time to append!
     if (!child) {

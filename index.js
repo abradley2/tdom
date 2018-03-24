@@ -44,6 +44,7 @@ function app () {
               state.todos[idx].title = e.target.value
             }}
           />
+          {state.todos[idx].completed && <span>Completed!</span>}
           <button
             onclick={() => {
               state.todos[idx].completed = !state.todos[idx].completed
