@@ -12,8 +12,9 @@ function createTextNode (text) {
 }
 
 module.exports = {
-  t: function t (tag, attrs, children) {
+  t: function t (tag, _attrs, ...children) {
     var i
+    var attrs = _attrs || {}
 
     // allow for 1 or 2 arguments for easy shorthands
     if (arguments.length === 1) return t(tag, {}, [])
@@ -28,11 +29,16 @@ module.exports = {
 
     if (!children) children = []
 
-    if (children.constructor === String) children = [children]
+    if (Array.isArray(children[0])) children = children[0]
 
     // automatically turn any child nodes that are strings into text nodes
     for (i = 0; i < children.length; i++) {
-      if (children[i] && children[i].constructor === String) {
+      if (typeof children[i] !== 'undefined' &&
+        (
+          children[i].constructor === String ||
+          children[i].constructor === Number
+        )
+      ) {
         children[i] = createTextNode(children[i])
       }
     }
@@ -59,9 +65,9 @@ module.exports = {
     })
 
     render(element, vdom)
-    
+
     return function () {
-      render(element, vndom)
+      render(element, vdom)
     }
   }
 }

@@ -1,5 +1,7 @@
 var events = require('./events')
 
+// The job of render is to take a vnode and actually "render"
+// this vnode to the dom with createElement, setAttribute, appendChild, etc
 module.exports = function (onUpdate) {
   return function render (element, vnode, parentVnode) {
     var el
@@ -18,8 +20,8 @@ module.exports = function (onUpdate) {
       // if attribute is a handler, apply it to the node
       if (events[attr]) {
         var handler = vnode.attrs[attr]
-        var wrappedHandler = function () {
-          handler.apply(vnode, arguments)
+        var wrappedHandler = function (e) {
+          handler(e, vnode)
           vnode.onUpdate()
         }
         el[events[attr]] = wrappedHandler
@@ -29,6 +31,11 @@ module.exports = function (onUpdate) {
 
       // otherwise, just set the attribute on the node with setAttribute
       el.setAttribute(attr, vnode.attrs[attr])
+    }
+    
+    // skip over falsey
+    if (vnode.children === false || vnode.children === null || typeof vnode.children === 'undefined') {
+      return
     }
 
     // if the "children" is a string use it as innerText

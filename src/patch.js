@@ -2,6 +2,10 @@ var events = require('./events')
 var getAttr = require('./attrs').getAttr
 var setAttr = require('./attrs').setAttr
 
+// The job of patch is to take the new vdom and merge it into the old vdom
+// as patch merges the vdoms it will also call "render" to keep the actual
+// dom in sync with the updated "oldVnode" (the newVnode never has it's own)
+// real dom. It's only purpose is to have its v-tree patched into the old-vtree
 module.exports = function patch (oldVnode, newVnode, render) {
   var parent = oldVnode.dom.parentElement
   var parentVnode = oldVnode.parentVnode
@@ -13,7 +17,6 @@ module.exports = function patch (oldVnode, newVnode, render) {
 
     var oldChildNode = oldVnode.dom
     var newChildNode = render(null, Object.assign(oldVnode, newVnode), parentVnode).dom
-
     parent.replaceChild(oldChildNode, newChildNode)
 
     // we're done here
@@ -32,8 +35,8 @@ module.exports = function patch (oldVnode, newVnode, render) {
     // for event handlers we need to re-wrap them as we copy them over
     if (events[attr] && oldVnode.attrs[attr] !== newVnode.attrs[attr]) {
       var handler = newVnode.attrs[attr]
-      var wrappedHandler = function () {
-        handler.apply(oldVnode, arguments)
+      var wrappedHandler = function (e) {
+        handler(e, oldVnode)
         oldVnode.onUpdate()
       }
       oldVnode.attrs[attr] = wrappedHandler
@@ -51,33 +54,39 @@ module.exports = function patch (oldVnode, newVnode, render) {
   }
 
   var i = 0
-  var children = newVnode.children.map(function (child, idx) {
-    return Object.assign({
-      key: child.attrs.keyy || idx
-    }, child)
-  })
-  
+  var children = newVnode.children
 
   while (i < children.length) {
     var child = oldVnode.children[i]
 
+    // if the newvnode in this place is falsey, remove it from the dom
+    // and leave a false placeholder
+    if (
+      newVnode.children[i] === false &&
+      oldVnode.children[i] !== false
+    ) {
+      oldVnode.children[i].dom.remove()
+      oldVnode.children[i] = false
+      i = i + 1
+      continue
+    }
+
     // if the oldVnodes children don't extend this far, time to append!
     if (!child) {
-      var newEl = render(null, newVnode.children[i], oldVnode.dom)
+      render(oldVnode.dom, newVnode.children[i], oldVnode)
       oldVnode.children[i] = newVnode.children[i]
-      oldVnode.dom.appendChild(newEl)
-    } else if (
-      typeof child.attrs.key !== 'undefined' &&
-      child.attrs.key === newVnode.children[i].attrs.key
-    ) {
-      window.console.log('simple patch === nchild === ', child)
-    // otherwise we need to figure out how to patch this
+      i = i + 1
+      // when we call render because its a new vnode tree we don't need to patch
+      // it afterwards as that would be redundant
+      continue
     }
 
     patch(oldVnode.children[i], newVnode.children[i], render)
     i = i + 1
   }
-  
+
+  // if the index still isn't as large as the oldVnode then this means
+  // we need to delete stuff
   while (i < oldVnode.children.length) {
     oldVnode.children[i].dom.remove()
     oldVnode.children.splice(i, 1)
