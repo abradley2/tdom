@@ -32,7 +32,7 @@ module.exports = function (onUpdate) {
       // otherwise, just set the attribute on the node with setAttribute
       el.setAttribute(attr, vnode.attrs[attr])
     }
-    
+
     // skip over falsey
     if (vnode.children === false || vnode.children === null || typeof vnode.children === 'undefined') {
       return
