@@ -51,20 +51,15 @@ module.exports = function patch (oldVnode, newVnode, render) {
   }
 
   var i = 0
-  var children = newVnode.children.map(function (child, idx) {
-    return Object.assign({
-      key: child.attrs.key || idx
-    }, child)
-  })
+  var children = newVnode.children
 
   while (i < children.length) {
     var child = oldVnode.children[i]
 
     // if the oldVnodes children don't extend this far, time to append!
     if (!child) {
-      var newEl = render(null, newVnode.children[i], oldVnode.dom)
+      render(oldVnode.dom, newVnode.children[i], oldVnode)
       oldVnode.children[i] = newVnode.children[i]
-      oldVnode.dom.appendChild(newEl)
     }
 
     patch(oldVnode.children[i], newVnode.children[i], render)
