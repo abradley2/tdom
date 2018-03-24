@@ -72,7 +72,7 @@ function app () {
       >
         +count
       </button>
-      {state.count.toString()}
+      {state.count}
     </div>
     <div>
       {state.count % 2 === 0

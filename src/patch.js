@@ -2,10 +2,6 @@ var events = require('./events')
 var getAttr = require('./attrs').getAttr
 var setAttr = require('./attrs').setAttr
 
-// The job of patch is to take the new vdom and merge it into the old vdom
-// as patch merges the vdoms it will also call "render" to keep the actual
-// dom in sync with the updated "oldVnode" (the newVnode never has it's own)
-// real dom. It's only purpose is to have its v-tree patched into the old-vtree
 module.exports = function patch (oldVnode, newVnode, render) {
   var parent = oldVnode.dom.parentElement
   var parentVnode = oldVnode.parentVnode

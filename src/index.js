@@ -39,7 +39,7 @@ module.exports = {
           children[i].constructor === Number
         )
       ) {
-        children[i] = createTextNode(children[i])
+        children[i] = createTextNode(children[i].toString())
       }
     }
 
