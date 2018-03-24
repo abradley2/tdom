@@ -60,6 +60,10 @@ module.exports = function patch (oldVnode, newVnode, render) {
     if (!child) {
       render(oldVnode.dom, newVnode.children[i], oldVnode)
       oldVnode.children[i] = newVnode.children[i]
+      i = i + 1
+      // when we call render because its a new vnode tree we don't need to patch
+      // it afterwards as that would be redundant
+      continue
     }
 
     patch(oldVnode.children[i], newVnode.children[i], render)
