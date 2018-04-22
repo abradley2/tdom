@@ -3,7 +3,7 @@ var patch = require('./patch')
 function createTextNode (text) {
   return {
     $vnode: true,
-    tag: null,
+    tag: 'text',
     textNode: true,
     text: text,
     attrs: {},
@@ -42,12 +42,17 @@ module.exports = {
         children[i] = createTextNode(children[i].toString())
       }
     }
+    
+    const isComponent = tag && tag.constructor === Function
 
     return {
       $vnode: true,
+      component: isComponent,
       tag: tag,
       attrs: attrs,
-      children: children
+      children: isComponent 
+        ? tag(Object.assign({}, {children: children}, attrs))
+        : children
     }
   },
 

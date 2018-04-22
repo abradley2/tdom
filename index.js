@@ -11,8 +11,15 @@ const state = {
   count: 0
 }
 
+function SomeComponent({text}) {
+  return <div>
+    <h3>{text}</h3>
+  </div>
+}
+
 function app () {
   return <div>
+    <SomeComponent text={state.newTodo}/>
     <input
       type="text"
       value={state.newTodo}

@@ -1,12 +1,19 @@
 var events = require('./events')
 
 module.exports = function (onUpdate) {
-  return function render (element, vnode, parentVnode) {
+  return function render (element, vnode, parentVnode, renderComponentRoot) {
     var el
-    if (vnode.textNode) {
-      el = document.createTextNode(vnode.text)
-    } else {
-      el = document.createElement(vnode.tag)
+    if (vnode.tag) {
+      // if its a text node create a text node
+      if (vnode.textNode) {
+        el = document.createTextNode(vnode.text)
+      // if its a componnent create a component
+      } else if (vnode.component) {
+        var props = Object.assign({ children: vnode.children }, vnode.attrs)
+        vnode.children = render(element, vnode.tag(props), parentVnode)
+      } else {
+        el = document.createElement(vnode.tag)
+      } 
     }
 
     vnode.dom = el
@@ -14,21 +21,23 @@ module.exports = function (onUpdate) {
     vnode.root = !!parentVnode
     vnode.onUpdate = onUpdate
 
-    for (var attr in vnode.attrs) {
-      // if attribute is a handler, apply it to the node
-      if (events[attr]) {
-        var handler = vnode.attrs[attr]
-        var wrappedHandler = function (e) {
-          handler(e, vnode)
-          vnode.onUpdate()
+    if (vnode.dom) {
+      for (var attr in vnode.attrs) {
+        // if attribute is a handler, apply it to the node
+        if (events[attr]) {
+          var handler = vnode.attrs[attr]
+          var wrappedHandler = function (e) {
+            handler(e, vnode)
+            vnode.onUpdate()
+          }
+          el[events[attr]] = wrappedHandler
+          vnode.attrs[attr] = wrappedHandler
+          continue
         }
-        el[events[attr]] = wrappedHandler
-        vnode.attrs[attr] = wrappedHandler
-        continue
-      }
 
-      // otherwise, just set the attribute on the node with setAttribute
-      el.setAttribute(attr, vnode.attrs[attr])
+        // otherwise, just set the attribute on the node with setAttribute
+        el.setAttribute(attr, vnode.attrs[attr])
+      }
     }
 
     // skip over falsey

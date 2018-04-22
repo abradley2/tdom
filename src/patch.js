@@ -2,7 +2,18 @@ var events = require('./events')
 var getAttr = require('./attrs').getAttr
 var setAttr = require('./attrs').setAttr
 
-module.exports = function patch (oldVnode, newVnode, render) {
+module.exports = function patch (oldVnode, newVnode, render, componentFunc) {
+  if (typeof oldVnode === 'undefined') {
+    window.console.log('why the fuck is this undefined', oldVnode, newVnode)
+    return
+  }
+
+  // if it is a component it's dom is actually the first child, and it's own
+  // vnode is just a container. So skip to patching the children
+  if (oldVnode.component) {
+    return patch(oldVnode.children, newVnode.children, render, oldVnode.tag)
+  }
+
   var parent = oldVnode.dom.parentElement
   var parentVnode = oldVnode.parentVnode
 
