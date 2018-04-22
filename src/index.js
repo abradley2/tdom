@@ -11,6 +11,17 @@ function createTextNode (text) {
   }
 }
 
+function createEmptyNode () {
+  return {
+    $vnode: true,
+    empty: true,
+    tag: null,
+    textNode: false,
+    attrs: {},
+    children: []
+  }
+}
+
 module.exports = {
   smol: function smol (tag, _attrs, ...children) {
     var i
@@ -41,6 +52,9 @@ module.exports = {
       ) {
         children[i] = createTextNode(children[i].toString())
       }
+      if (!children[i]) {
+        children[i] = createEmptyNode()
+      }
     }
     
     var isComponent = tag && tag.constructor === Function
@@ -68,11 +82,12 @@ module.exports = {
 
     function render(initialCheck) {
       var newVdom = app()
+      window.console.log(newVdom)
       // get the diff from the old
       var diff = require('./diff')(oldVdom, newVdom, [])
+      oldVdom = newVdom
       require('./patch')(diff, element, render, initialRender)
       // set the oldVdom as the newVdom so it will be diffed against next
-      oldVdom = newVdom
     }
     
     render()

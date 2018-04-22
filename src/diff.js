@@ -39,8 +39,11 @@ function diff(oldVnode, newVnode, operations) {
   var i
   for (i = 0; i < newVnode.children.length; i ++) {
     var newVnodeChild = newVnode.children[i]
-    var key = newVnodeChild.attrs.key
+    var key = newVnodeChild && newVnodeChild.attrs.key
     var cacheHit = cache[key]
+    // deal with these pesky false, null, and undefs here
+
+    
     var oldVnodeChild = cacheHit || oldVnode.children[i]
 
     // did we move this node around?
@@ -62,27 +65,27 @@ function diff(oldVnode, newVnode, operations) {
         tag: newVnode.tag,
         attrs: newVnode.attrs,
         children: newVnode.children,
-        component: newVnode.component,
-        subOps: diff(oldVnodeChild, newVnodeChild, [])
+        component: newVnode.component
       })
     } else  
     // if we've gone beyond the boundary and there's no cache hit
     // (if there was a cache hit we would have already dispatched the move op)
-    if (!cacheHit && i > oldVnode.children.length - 1) {
+    if (!cacheHit && !oldVnode.children[i]) {
       operations.push({
         op: 'APPEND',
         tag: newVnode.tag,
         attrs: newVnode.attrs,
         children: newVnode.children,
-        component: newVnode.component,
-        subOps: diff(oldVnodeChild, newVnodeChild, [])
+        component: newVnode.component
       })
     } else  
     // No movement of the node, inserting, or appending, just diff da children
-    operations.push({
-      op: 'NOOP',
-      subOps: diff(oldVnodeChild, newVnodeChild, [])
-    })
+    if (newVnodeChild && oldVnodeChild) {
+      operations.push({
+        op: 'NOOP',
+        subOps: diff(oldVnodeChild, newVnodeChild, [])
+      })
+    }
   }
 
   // if the number of new children is less than old, we need to remove the rest

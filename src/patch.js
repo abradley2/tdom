@@ -9,6 +9,8 @@ function renderNewTree(params, parent, render) {
   var el = params.textNode
     ? document.createTextNode(params.text)
     : document.createElement(params.tag)
+    
+  if (params.empty) return
   
   // then go through the attributes and set them all
   Object.keys(params.attrs).forEach(function (attrName) {
