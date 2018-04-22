@@ -12,7 +12,7 @@ function createTextNode (text) {
 }
 
 module.exports = {
-  t: function t (tag, _attrs, ...children) {
+  smol: function smol (tag, _attrs, ...children) {
     var i
     var attrs = _attrs || {}
 
@@ -43,7 +43,7 @@ module.exports = {
       }
     }
     
-    const isComponent = tag && tag.constructor === Function
+    var isComponent = tag && tag.constructor === Function
 
     return {
       $vnode: true,
@@ -57,17 +57,27 @@ module.exports = {
   },
 
   mount: function mount (app, element) {
-    var vdom = app()
-
-    var render = require('./render')(function onUpdate () {
-      var updatedVdom = app()
-      patch(vdom, updatedVdom, render)
-    })
-
-    render(element, vdom)
-
-    return function () {
-      render(element, vdom)
+    var initialRender = true
+    var oldVdom = {
+      root: true,
+      component: false,
+      tag: null,
+      attrs: {},
+      children: []
     }
+
+    function render(initialCheck) {
+      var newVdom = app()
+      // get the diff from the old
+      var diff = require('./diff')(oldVdom, newVdom, [])
+      require('./patch')(diff, element, render, initialRender)
+      // set the oldVdom as the newVdom so it will be diffed against next
+      oldVdom = newVdom
+    }
+    
+    render()
+    initialRender = false
+
+    return render
   }
 }

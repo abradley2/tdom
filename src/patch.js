@@ -1,102 +1,65 @@
-var events = require('./events')
 var getAttr = require('./attrs').getAttr
 var setAttr = require('./attrs').setAttr
+var events = require('./events')
 
-module.exports = function patch (oldVnode, newVnode, render, componentFunc) {
-  if (typeof oldVnode === 'undefined') {
-    window.console.log('why the fuck is this undefined', oldVnode, newVnode)
-    return
-  }
-
-  // if it is a component it's dom is actually the first child, and it's own
-  // vnode is just a container. So skip to patching the children
-  if (oldVnode.component) {
-    return patch(oldVnode.children, newVnode.children, render, oldVnode.tag)
-  }
-
-  var parent = oldVnode.dom.parentElement
-  var parentVnode = oldVnode.parentVnode
-
-  // if the tag is entirely different,
-  // copy over everything fresh and re-render
-  if (oldVnode.tag !== newVnode.tag) {
-    if (oldVnode.root) throw new Error('Cannot change tag of root app element')
-
-    var oldChildNode = oldVnode.dom
-    var newChildNode = render(null, Object.assign(oldVnode, newVnode), parentVnode)
-    parent.replaceChild(newChildNode, oldChildNode)
-
-    // we're done here
-    return
-  }
-
-  // text nodes are easy to diff, just compare their text
-  if (oldVnode.textNode && oldVnode.dom.textContent !== newVnode.text) {
-    oldVnode.text = newVnode.text
-    oldVnode.dom.textContent = newVnode.text
-    return
-  }
-
-  // check if any attribtues have changed
-  for (var attr in newVnode.attrs) {
-    // for event handlers we need to re-wrap them as we copy them over
-    if (events[attr] && oldVnode.attrs[attr] !== newVnode.attrs[attr]) {
-      var handler = newVnode.attrs[attr]
-      var wrappedHandler = function (e) {
-        handler(e, oldVnode)
-        oldVnode.onUpdate()
-      }
-      oldVnode.attrs[attr] = wrappedHandler
-      oldVnode.dom[attr] = wrappedHandler
-      continue
+// convenience function for when we render an entirely new tree since it's just
+// so much easier
+function renderNewTree(params, parent, render) {
+  // first we create the node
+  var el = params.textNode
+    ? document.createTextNode(params.text)
+    : document.createElement(params.tag)
+  
+  // then go through the attributes and set them all
+  Object.keys(params.attrs).forEach(function (attrName) {
+    var attr = params.attrs[attrName]
+    
+    // we need to treat event handlers special
+    if (events[attrName]) {
+      attr = (function (handler) {
+        var wrapped = function (e) {
+          var result = params.attrs[attrName](e, render) // pass render as a callback for non-promise async
+          if (result && result.then) { // respect and wait for handlers that call async
+            return result.then(render).catch(render)
+          }
+          return render()
+        }
+        wrapped.wrapped = true // so we don't double wrap later
+        return wrapped
+      })(attr)
+      
+      el[attrName] = attr
+    } else {
+      // other attributes we can just use our simple convenience function
+      setAttr(el, attrName, params.attrs[attrName])
     }
-
-    // anything else we can just set normally
-    if (newVnode.attrs[attr] !== getAttr(oldVnode.dom, attr)) {
-      var value = newVnode.attrs[attr]
-
-      oldVnode.attrs[attr] = value
-      setAttr(oldVnode.dom, attr, value)
-    }
-  }
-
-  var i = 0
-  var children = newVnode.children
-
-  while (i < children.length) {
-    var child = oldVnode.children[i]
-
-    // if the newvnode in this place is falsey, remove it from the dom
-    // and leave a false placeholder
-    if (
-      newVnode.children[i] === false &&
-      oldVnode.children[i] !== false
-    ) {
-      oldVnode.children[i].dom.remove()
-      oldVnode.children[i] = false
-      i = i + 1
-      continue
-    }
-
-    // if the oldVnodes children don't extend this far, time to append!
-    if (!child) {
-      render(oldVnode.dom, newVnode.children[i], oldVnode)
-      oldVnode.children[i] = newVnode.children[i]
-      i = i + 1
-      // when we call render because its a new vnode tree we don't need to patch
-      // it afterwards as that would be redundant
-      continue
-    }
-
-    patch(oldVnode.children[i], newVnode.children[i], render)
-    i = i + 1
-  }
-
-  // if the index still isn't as large as the oldVnode then this means
-  // we need to delete stuff
-  while (i < oldVnode.children.length) {
-    oldVnode.children[i].dom.remove()
-    oldVnode.children.splice(i, 1)
-    i = i + 1
-  }
+  })
+  
+  // call it for all the children as well
+  params.children.forEach(function (childVnode) {
+    if (!childVnode) return
+    renderNewTree(childVnode, el, render)
+  })
+  
+  // add it to parent``
+  if (parent) parent.appendChild(el)
+  
+  // return fo' dat convenience
+  return el
 }
+
+function patch(operations, element, render, initialRender) {
+  for (var i = 0; i < operations.length; i++) {
+    var params = operations[i]
+    var op = params.op
+    
+    // for the initial render the replace is actually adding a root element
+    if (op === 'REPLACE') {
+      renderNewTree(params, element, render)
+      continue
+    }
+  }
+  return {}
+}
+
+module.exports = patch

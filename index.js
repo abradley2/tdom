@@ -1,5 +1,5 @@
-/** @jsx t */
-const {t, mount} = require('./src')
+/** @jsx smol */
+const {smol, mount} = require('./src')
 
 let uid = 0
 
@@ -19,7 +19,7 @@ function SomeComponent({text}) {
 
 function app () {
   return <div>
-    <SomeComponent text={state.newTodo}/>
+    {/*<SomeComponent text={state.newTodo}/> */}
     <input
       type="text"
       value={state.newTodo}

@@ -22,5 +22,17 @@ module.exports = {
   onmouseout: 'onmouseout',
   onmouseover: 'onmouseover',
   onmouseup: 'onmouseup',
-  onwheel: 'onwheel'
+  onwheel: 'onwheel',
+  onselect: 'onselect',
+  // drag events
+  ondragstart: 'ondragstart',
+  ondrag: 'ondrag',
+  ondragend: 'ondragend',
+  ondragenter: 'ondragenter',
+  ondragover: 'ondragover',
+  ondragleave: 'ondragleave',
+  ondrop: 'ondrop',
+  // resource events
+  onload: 'onload',
+  onerror: 'onerror'
 }
